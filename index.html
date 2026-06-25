@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>G&G Smart Training AI</title>
+<style>
+:root {
+  --navy: #1a1f36;
+  --navy2: #252b47;
+  --orange: #f97316;
+  --orange-dark: #ea6c0a;
+  --orange-light: #fff4ed;
+  --bg: #f5f6fa;
+  --card: #ffffff;
+  --text: #1a1f36;
+  --sub: #6b7280;
+  --border: #e5e7eb;
+  --radius: 12px;
+  --shadow: 0 2px 12px rgba(0,0,0,0.07);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* ── 공통 ── */
+.screen { display: none; min-height: 100vh; flex-direction: column; }
+.screen.active { display: flex; }
+.card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--border); }
+.btn { border: none; border-radius: var(--radius); cursor: pointer; font-size: 15px; font-weight: 700; padding: 15px 20px; transition: all .18s; width: 100%; letter-spacing: -0.2px; }
+.btn-primary { background: var(--orange); color: #fff; }
+.btn-primary:hover { background: var(--orange-dark); }
+.btn-secondary { background: var(--card); color: var(--sub); border: 1px solid var(--border); }
+.btn-secondary:hover { background: var(--bg); }
+.back-btn { background: none; border: none; color: var(--sub); cursor: pointer; font-size: 14px; padding: 6px 0; display: flex; align-items: center; gap: 4px; }
+
+/* ── 헤더 (GSV 스타일) ── */
+.gsv-header {
+  background: var(--navy);
+  padding: 0 20px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.gsv-header .logo { display: flex; align-items: center; gap: 10px; }
+.gsv-header .logo-badge {
+  background: var(--orange);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+}
+.gsv-header .logo-text { color: rgba(255,255,255,0.75); font-size: 13px; font-weight: 400; }
+.gsv-header .user-name { color: rgba(255,255,255,0.8); font-size: 13px; }
+
+/* ── 홈 화면 ── */
+#screen-home { background: var(--bg); }
+.home-hero {
+  background: var(--navy);
+  padding: 32px 20px 40px;
+  text-align: center;
+  color: #fff;
+}
+.home-hero .hero-badge {
+  display: inline-block;
+  background: rgba(249,115,22,0.2);
+  border: 1px solid rgba(249,115,22,0.4);
+  color: var(--orange);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  padding: 4px 12px;
+  border-radius: 100px;
+  margin-bottom: 14px;
+}
+.home-hero h1 { font-size: 24px; font-weight: 800; line-height: 1.4; margin-bottom: 8px; }
+.home-hero p { font-size: 13px; color: rgba(255,255,255,0.6); }
+
+.home-body { padding: 20px; display: flex; flex-direction: column; gap: 14px; margin-top: -20px; }
+.home-input-card { padding: 20px; }
+.home-input-card label { font-size: 13px; font-weight: 600; color: var(--sub); display: block; margin-bottom: 8px; }
+.home-input-card input {
+  width: 100%; border: 1.5px solid var(--border); border-radius: var(--radius);
+  font-size: 15px; padding: 13px 14px; transition: border-color .2s;
+  background: var(--bg); color: var(--text);
+}
+.home-input-card input:focus { border-color: var(--orange); outline: none; background: #fff; }
+
+.home-features-card { padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; }
+.feature-row { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--sub); }
+.feature-dot { width: 6px; height: 6px; background: var(--orange); border-radius: 50%; flex-shrink: 0; }
+
+.admin-link { color: var(--sub); display: block; font-size: 12px; text-align: center; text-decoration: none; padding: 8px; }
+.admin-link:hover { color: var(--navy); }
+
+/* ── 서브 페이지 공통 헤더 ── */
+.page-body { padding: 20px; flex: 1; overflow-y: auto; }
+.page-title { margin-bottom: 20px; }
+.page-title h2 { font-size: 18px; font-weight: 800; color: var(--text); margin-bottom: 3px; }
+.page-title p { font-size: 13px; color: var(--sub); }
+
+/* ── 직무 선택 ── */
+.job-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+.job-btn {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  padding: 18px 10px;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  transition: all .18s; text-align: center;
+  box-shadow: var(--shadow);
+}
+.job-btn:hover { border-color: var(--orange); background: var(--orange-light); }
+.job-btn.selected { border-color: var(--orange); background: var(--orange-light); box-shadow: 0 0 0 3px rgba(249,115,22,0.12); }
+.job-btn .icon { font-size: 26px; }
+.job-btn .name { font-size: 13px; font-weight: 700; color: var(--text); }
+.job-btn .desc { font-size: 11px; color: var(--sub); }
+
+/* ── 난이도 선택 ── */
+.diff-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+.diff-btn {
+  background: var(--card); border: 1.5px solid var(--border); border-radius: var(--radius);
+  cursor: pointer; display: flex; align-items: center; gap: 14px; padding: 16px 18px;
+  transition: all .18s; text-align: left; width: 100%; box-shadow: var(--shadow);
+}
+.diff-btn:hover { border-color: var(--orange); background: var(--orange-light); }
+.diff-btn.selected { border-color: var(--orange); background: var(--orange-light); box-shadow: 0 0 0 3px rgba(249,115,22,0.12); }
+.diff-lv { font-size: 15px; font-weight: 800; color: var(--orange); min-width: 48px; }
+.diff-info .title { font-size: 14px; font-weight: 700; color: var(--text); }
+.diff-info .desc { font-size: 12px; color: var(--sub); margin-top: 2px; }
+.diff-info .stars { color: #f59e0b; font-size: 12px; margin-top: 3px; }
+
+/* ── 채팅 ── */
+#screen-chat { height: 100vh; overflow: hidden; }
+.chat-header {
+  background: var(--navy);
+  padding: 12px 16px;
+  flex-shrink: 0;
+}
+.chat-header-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.chat-header-top .exit-btn { background: none; border: none; color: rgba(255,255,255,0.6); cursor: pointer; font-size: 13px; }
+.chat-header-top h3 { flex: 1; color: #fff; font-size: 15px; font-weight: 700; }
+.turn-badge {
+  background: var(--orange); color: #fff;
+  border-radius: 100px; font-size: 11px; font-weight: 700; padding: 3px 10px;
+}
+.chat-scenario {
+  background: rgba(255,255,255,0.1); border-radius: 8px;
+  font-size: 12px; color: rgba(255,255,255,0.8); padding: 8px 12px; line-height: 1.5;
+}
+.chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; background: var(--bg); }
+.msg { max-width: 82%; }
+.msg.customer { align-self: flex-start; }
+.msg.staff   { align-self: flex-end; }
+.msg-label { font-size: 11px; color: var(--sub); font-weight: 600; margin-bottom: 4px; }
+.msg.staff .msg-label { text-align: right; }
+.msg-bubble { border-radius: 14px; font-size: 14px; line-height: 1.65; padding: 11px 15px; }
+.msg.customer .msg-bubble { background: var(--card); border: 1px solid var(--border); border-top-left-radius: 4px; color: var(--text); }
+.msg.staff .msg-bubble { background: var(--orange); color: #fff; border-top-right-radius: 4px; }
+
+.chat-input-area { background: var(--card); border-top: 1px solid var(--border); padding: 12px 14px; flex-shrink: 0; }
+.chat-input-row { display: flex; align-items: flex-end; gap: 8px; }
+.chat-input-row textarea {
+  flex: 1; border: 1.5px solid var(--border); border-radius: var(--radius);
+  font-size: 14px; line-height: 1.5; max-height: 100px; min-height: 44px;
+  padding: 10px 13px; resize: none; transition: border-color .2s;
+  font-family: inherit;
+}
+.chat-input-row textarea:focus { border-color: var(--orange); outline: none; }
+.send-btn {
+  background: var(--orange); border: none; border-radius: var(--radius);
+  color: #fff; cursor: pointer; flex-shrink: 0; font-size: 18px;
+  height: 44px; width: 44px; transition: background .18s;
+}
+.send-btn:disabled { background: var(--border); cursor: not-allowed; }
+.send-btn:hover:not(:disabled) { background: var(--orange-dark); }
+.eval-wrap { margin-top: 8px; }
+.eval-wrap .btn { font-size: 14px; padding: 12px; }
+
+/* 타이핑 */
+.typing-indicator { display: flex; align-items: center; gap: 4px; padding: 6px 4px; }
+.typing-indicator span {
+  animation: bounce .6s infinite alternate;
+  background: var(--sub); border-radius: 50%; height: 7px; width: 7px;
+}
+.typing-indicator span:nth-child(2) { animation-delay: .2s; }
+.typing-indicator span:nth-child(3) { animation-delay: .4s; }
+@keyframes bounce { to { transform: translateY(-6px); } }
+
+/* ── 결과 화면 ── */
+#screen-result { background: var(--bg); align-items: center; justify-content: center; padding: 24px 20px; }
+.result-wrap { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 14px; }
+.result-top { padding: 28px 20px; text-align: center; }
+.grade-circle {
+  width: 110px; height: 110px; border-radius: 50%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+}
+.grade-circle.A { background: linear-gradient(135deg, #16a34a, #22c55e); }
+.grade-circle.B { background: linear-gradient(135deg, var(--orange), #fb923c); }
+.grade-circle.C { background: linear-gradient(135deg, #dc2626, #f87171); }
+.grade-letter { color: #fff; font-size: 48px; font-weight: 900; line-height: 1; }
+.grade-label-sm { color: rgba(255,255,255,0.85); font-size: 11px; font-weight: 600; }
+.result-score-num { font-size: 34px; font-weight: 800; color: var(--text); }
+.result-score-num span { font-size: 16px; color: var(--sub); font-weight: 400; }
+.result-grade-txt { font-size: 14px; color: var(--sub); margin-top: 4px; }
+
+.feedback-card { padding: 18px 20px; }
+.feedback-card h4 { font-size: 12px; font-weight: 700; color: var(--sub); margin-bottom: 10px; letter-spacing: 0.5px; }
+.feedback-card p { font-size: 14px; line-height: 1.8; color: var(--text); }
+
+.result-btns { display: flex; flex-direction: column; gap: 8px; padding: 0 0 8px; }
+
+/* ── 관리자 로그인 ── */
+#screen-admin-login { background: var(--navy); align-items: center; justify-content: center; padding: 32px 20px; }
+.admin-login-box { background: var(--navy2); border-radius: 16px; padding: 32px 24px; width: 100%; max-width: 360px; border: 1px solid rgba(255,255,255,0.08); }
+.admin-login-box .admin-logo { display: flex; align-items: center; gap: 10px; justify-content: center; margin-bottom: 20px; }
+.admin-login-box label { color: rgba(255,255,255,0.5); font-size: 12px; font-weight: 600; display: block; margin-bottom: 6px; }
+.admin-login-box input {
+  background: var(--navy); border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--radius); color: #fff; font-size: 15px; padding: 12px 14px; width: 100%;
+}
+.admin-login-box input:focus { border-color: var(--orange); outline: none; }
+.admin-error { color: #f87171; font-size: 13px; margin-top: 8px; text-align: center; min-height: 20px; }
+.admin-back { color: rgba(255,255,255,0.4); display: block; font-size: 12px; margin-top: 16px; text-align: center; text-decoration: none; }
+.admin-back:hover { color: rgba(255,255,255,0.7); }
+
+/* ── 알림 배너 (GSV 스타일) ── */
+.notice-banner {
+  background: var(--orange-light); border: 1px solid rgba(249,115,22,0.25);
+  border-radius: var(--radius); padding: 12px 16px; margin-bottom: 14px;
+}
+.notice-banner .notice-title { font-size: 13px; font-weight: 700; color: var(--orange); margin-bottom: 2px; }
+.notice-banner .notice-sub { font-size: 12px; color: #92400e; }
+
+/* ── 로딩 ── */
+.loading-overlay {
+  align-items: center; background: rgba(255,255,255,0.92);
+  bottom: 0; display: none; justify-content: center; left: 0;
+  position: fixed; right: 0; top: 0; z-index: 999;
+}
+.loading-overlay.show { display: flex; }
+.spinner { animation: spin 1s linear infinite; border: 3px solid var(--border); border-top-color: var(--orange); border-radius: 50%; height: 38px; width: 38px; }
+.loading-text { color: var(--sub); font-size: 14px; margin-top: 12px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- ══ 홈 ══ -->
+<div id="screen-home" class="screen active">
+  <div class="home-hero">
+    <div class="hero-badge">G&G SMART TRAINING AI</div>
+    <h1>고객응대<br>훈련 시스템</h1>
+    <p>AI 시뮬레이션으로 실전 능력을 키우세요</p>
+  </div>
+  <div class="home-body">
+    <div class="card home-input-card">
+      <label>이름을 입력하세요</label>
+      <input type="text" id="input-name" placeholder="홍길동" maxlength="20">
+    </div>
+    <div class="card home-features-card">
+      <div class="feature-row"><div class="feature-dot"></div>8가지 직무별 맞춤 훈련 시나리오</div>
+      <div class="feature-row"><div class="feature-dot"></div>5단계 난이도 · 매번 새로운 상황</div>
+      <div class="feature-row"><div class="feature-dot"></div>AI 즉시 평가 및 상세 피드백 제공</div>
+    </div>
+    <button class="btn btn-primary" onclick="goJob()">훈련 시작하기</button>
+    <a href="/admin" class="admin-link">🔐 관리자 페이지</a>
+  </div>
+</div>
+
+<!-- ══ 직무 선택 ══ -->
+<div id="screen-job" class="screen">
+  <div class="gsv-header">
+    <div class="logo">
+      <span class="logo-badge">GST</span>
+      <span class="logo-text">G&G Smart Training AI</span>
+    </div>
+    <span class="user-name" id="header-name-job"></span>
+  </div>
+  <div class="page-body">
+    <button class="back-btn" onclick="goHome()">← 뒤로</button>
+    <div class="page-title" style="margin-top:12px;">
+      <h2>직무 선택</h2>
+      <p>담당 직무를 선택하세요</p>
+    </div>
+    <div class="job-grid">
+      <button class="job-btn" onclick="selectJob('cashier',this)">
+        <span class="icon">🛒</span><span class="name">캐셔</span><span class="desc">계산대 응대</span>
+      </button>
+      <button class="job-btn" onclick="selectJob('vegetable',this)">
+        <span class="icon">🥬</span><span class="name">야채/과일</span><span class="desc">신선식품 코너</span>
+      </button>
+      <button class="job-btn" onclick="selectJob('seafood',this)">
+        <span class="icon">🐟</span><span class="name">수산</span><span class="desc">수산물 코너</span>
+      </button>
+      <button class="job-btn" onclick="selectJob('meat',this)">
+        <span class="icon">🥩</span><span class="name">정육</span><span class="desc">정육 코너</span>
+      </button>
+      <button class="job-btn" onclick="selectJob('cs',this)">
+        <span class="icon">💬</span><span class="name">고객상담실</span><span class="desc">민원 처리</span>
+      </button>
+      <button class="job-btn" onclick="selectJob('vip',this)">
+        <span class="icon">⭐</span><span class="name">VIP 라운지</span><span class="desc">VIP 고객 응대</span>
+      </button>
+      <button class="job-btn" onclick="selectJob('rental',this)">
+        <span class="icon">🦽</span><span class="name">유모차/휠체어</span><span class="desc">대여 서비스</span>
+      </button>
+      <button class="job-btn" onclick="selectJob('general',this)">
+        <span class="icon">👤</span><span class="name">일반 응대</span><span class="desc">전반 고객 응대</span>
+      </button>
+    </div>
+    <button class="btn btn-primary" onclick="goDifficulty()">다음 →</button>
+  </div>
+</div>
+
+<!-- ══ 난이도 선택 ══ -->
+<div id="screen-difficulty" class="screen">
+  <div class="gsv-header">
+    <div class="logo">
+      <span class="logo-badge">GST</span>
+      <span class="logo-text">G&G Smart Training AI</span>
+    </div>
+    <span class="user-name" id="header-name-diff"></span>
+  </div>
+  <div class="page-body">
+    <button class="back-btn" onclick="showScreen('screen-job')">← 뒤로</button>
+    <div class="page-title" style="margin-top:12px;">
+      <h2>난이도 선택</h2>
+      <p>훈련 난이도를 선택하세요</p>
+    </div>
+    <div class="diff-list">
+      <button class="diff-btn" onclick="selectDiff(1,this)">
+        <div class="diff-lv">Lv.1</div>
+        <div class="diff-info"><div class="title">기본 고객</div><div class="desc">간단한 문의, 친절한 고객</div><div class="stars">⭐</div></div>
+      </button>
+      <button class="diff-btn" onclick="selectDiff(2,this)">
+        <div class="diff-lv">Lv.2</div>
+        <div class="diff-info"><div class="title">일반 클레임</div><div class="desc">교환/환불 요청, 이성적 불만</div><div class="stars">⭐⭐</div></div>
+      </button>
+      <button class="diff-btn" onclick="selectDiff(3,this)">
+        <div class="diff-lv">Lv.3</div>
+        <div class="diff-info"><div class="title">불만 고객</div><div class="desc">품질 불만, 감정적 고객</div><div class="stars">⭐⭐⭐</div></div>
+      </button>
+      <button class="diff-btn" onclick="selectDiff(4,this)">
+        <div class="diff-lv">Lv.4</div>
+        <div class="diff-info"><div class="title">강한 클레임</div><div class="desc">강경한 환불 요구, 압박 태도</div><div class="stars">⭐⭐⭐⭐</div></div>
+      </button>
+      <button class="diff-btn" onclick="selectDiff(5,this)">
+        <div class="diff-lv">Lv.5</div>
+        <div class="diff-info"><div class="title">진상 고객</div><div class="desc">복합 상황, 극한 테스트</div><div class="stars">⭐⭐⭐⭐⭐</div></div>
+      </button>
+    </div>
+    <button class="btn btn-primary" onclick="startTraining()">훈련 시작하기</button>
+  </div>
+</div>
+
+<!-- ══ 채팅 ══ -->
+<div id="screen-chat" class="screen" style="height:100vh; overflow:hidden;">
+  <div class="chat-header">
+    <div class="chat-header-top">
+      <button class="exit-btn" onclick="confirmExit()">✕</button>
+      <h3 id="chat-title">고객응대 훈련</h3>
+      <span class="turn-badge" id="turn-badge">0회</span>
+    </div>
+    <div class="chat-scenario" id="chat-scenario">시나리오 로딩 중...</div>
+  </div>
+  <div class="chat-messages" id="chat-messages"></div>
+  <div class="chat-input-area">
+    <div class="chat-input-row">
+      <textarea id="chat-input" placeholder="고객에게 응대하세요..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+      <button class="send-btn" id="send-btn" onclick="sendMessage()">➤</button>
+    </div>
+    <div class="eval-wrap" id="eval-wrap" style="display:none">
+      <button class="btn btn-primary" onclick="requestEval()">📊 평가 받기 (훈련 종료)</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 결과 ══ -->
+<div id="screen-result" class="screen" style="background:var(--bg); align-items:center; justify-content:center; padding:24px 20px;">
+  <div class="result-wrap">
+    <div class="card result-top">
+      <div id="grade-circle" class="grade-circle A">
+        <div class="grade-letter" id="result-grade">A</div>
+        <div class="grade-label-sm">등급</div>
+      </div>
+      <div class="result-score-num"><span id="result-score">0</span><span>점</span></div>
+      <div class="result-grade-txt" id="result-grade-txt">우수</div>
+    </div>
+    <div class="card feedback-card">
+      <h4>📝 평가 피드백</h4>
+      <p id="result-feedback">-</p>
+    </div>
+    <div class="result-btns">
+      <button class="btn btn-primary" onclick="retryTraining()">🔄 같은 조건으로 다시 도전</button>
+      <button class="btn btn-secondary" onclick="goHome()">🏠 처음으로</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 관리자 로그인 ══ -->
+<div id="screen-admin-login" class="screen">
+  <div class="admin-login-box">
+    <div class="admin-logo">
+      <span class="logo-badge" style="background:var(--orange);color:#fff;font-size:14px;font-weight:800;padding:4px 10px;border-radius:6px;">GST</span>
+      <span style="color:rgba(255,255,255,0.7); font-size:14px;">관리자 대시보드</span>
+    </div>
+    <div style="font-size:32px; text-align:center; margin-bottom:20px;">🔐</div>
+    <label>관리자 비밀번호</label>
+    <input type="password" id="admin-pw" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter')adminLogin()">
+    <div class="admin-error" id="admin-error"></div>
+    <button class="btn btn-primary" style="margin-top:16px;" onclick="adminLogin()">로그인</button>
+    <a href="/" class="admin-back">← 훈련 앱으로 돌아가기</a>
+  </div>
+</div>
+
+<!-- 로딩 -->
+<div class="loading-overlay" id="loading">
+  <div style="text-align:center;">
+    <div class="spinner" style="margin:0 auto;"></div>
+    <div class="loading-text" id="loading-text">처리 중...</div>
+  </div>
+</div>
+
+<script>
+let state = {
+  name:'', jobType:'', difficulty:0,
+  sessionId:'', messages:[], scenario:null, turnCount:0
+};
+const JOB_LABELS = {
+  cashier:'캐셔', vegetable:'야채/과일', seafood:'수산', meat:'정육',
+  cs:'고객상담실', vip:'VIP 라운지', rental:'유모차/휠체어', general:'일반 응대'
+};
+const GRADE_LABELS = { A:'우수', B:'양호', C:'개선 필요' };
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function showLoading(text='처리 중...') {
+  document.getElementById('loading-text').textContent = text;
+  document.getElementById('loading').classList.add('show');
+}
+function hideLoading() { document.getElementById('loading').classList.remove('show'); }
+
+function goHome() {
+  state = {name:'',jobType:'',difficulty:0,sessionId:'',messages:[],scenario:null,turnCount:0};
+  document.getElementById('input-name').value = '';
+  showScreen('screen-home');
+}
+
+function goJob() {
+  const name = document.getElementById('input-name').value.trim();
+  if (!name) { alert('이름을 입력해주세요.'); return; }
+  state.name = name;
+  document.getElementById('header-name-job').textContent = name + ' 님';
+  document.getElementById('header-name-diff').textContent = name + ' 님';
+  showScreen('screen-job');
+}
+
+function selectJob(jobType, el) {
+  document.querySelectorAll('.job-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  state.jobType = jobType;
+}
+
+function goDifficulty() {
+  if (!state.jobType) { alert('직무를 선택해주세요.'); return; }
+  showScreen('screen-difficulty');
+}
+
+function selectDiff(level, el) {
+  document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  state.difficulty = level;
+}
+
+async function startTraining() {
+  if (!state.difficulty) { alert('난이도를 선택해주세요.'); return; }
+  showLoading('훈련 준비 중...');
+  try {
+    const sessRes = await fetch('/api/session', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({employee_name:state.name, job_type:state.jobType, difficulty:state.difficulty})
+    });
+    const sessData = await sessRes.json();
+    state.sessionId = sessData.session_id;
+    state.messages = []; state.turnCount = 0;
+
+    const chatRes = await fetch('/api/chat', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({job_type:state.jobType, difficulty:state.difficulty, messages:[]})
+    });
+    const chatData = await chatRes.json();
+    state.scenario = chatData.scenario;
+
+    document.getElementById('chat-title').textContent = JOB_LABELS[state.jobType] + ' 훈련';
+    updateScenario();
+    document.getElementById('chat-messages').innerHTML = '';
+    document.getElementById('eval-wrap').style.display = 'none';
+    document.getElementById('turn-badge').textContent = '0회';
+
+    addMsg('assistant', chatData.message);
+    state.messages.push({role:'assistant', content:chatData.message});
+    showScreen('screen-chat');
+  } catch(e) { alert('훈련 시작 실패: ' + e.message); }
+  finally { hideLoading(); }
+}
+
+function updateScenario() {
+  if (!state.scenario) return;
+  const s = state.scenario;
+  document.getElementById('chat-scenario').textContent =
+    '📋 ' + s.situation + ' · ' + s.customer_type.replace(/_/g,' ');
+}
+
+function addMsg(role, content) {
+  const wrap = document.getElementById('chat-messages');
+  const isCust = role === 'assistant';
+  const div = document.createElement('div');
+  div.className = 'msg ' + (isCust ? 'customer' : 'staff');
+  div.innerHTML = `<div class="msg-label">${isCust ? '고객 (AI)' : state.name + ' (나)'}</div>
+    <div class="msg-bubble">${escH(content)}</div>`;
+  wrap.appendChild(div);
+  wrap.scrollTop = wrap.scrollHeight;
+}
+
+function escH(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
+function showTyping() {
+  const wrap = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'msg customer'; div.id = 'typing-msg';
+  div.innerHTML = `<div class="msg-label">고객 (AI)</div>
+    <div class="msg-bubble" style="padding:8px 15px">
+      <div class="typing-indicator"><span></span><span></span><span></span></div>
+    </div>`;
+  wrap.appendChild(div);
+  wrap.scrollTop = wrap.scrollHeight;
+}
+function removeTyping() { const e = document.getElementById('typing-msg'); if(e) e.remove(); }
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = ''; input.style.height = 'auto';
+  document.getElementById('send-btn').disabled = true;
+
+  addMsg('user', text);
+  state.messages.push({role:'user', content:text});
+  state.turnCount++;
+  document.getElementById('turn-badge').textContent = state.turnCount + '회';
+  if (state.turnCount >= 3) document.getElementById('eval-wrap').style.display = 'block';
+
+  showTyping();
+  try {
+    const res = await fetch('/api/chat', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({job_type:state.jobType, difficulty:state.difficulty, messages:state.messages, scenario:state.scenario})
+    });
+    const data = await res.json();
+    removeTyping();
+    addMsg('assistant', data.message);
+    state.messages.push({role:'assistant', content:data.message});
+  } catch(e) {
+    removeTyping();
+    addMsg('assistant','(응답 오류. 다시 시도해주세요.)');
+  } finally {
+    document.getElementById('send-btn').disabled = false;
+    document.getElementById('chat-input').focus();
+  }
+}
+
+function confirmExit() { if(confirm('훈련을 종료하시겠습니까?')) goHome(); }
+
+async function requestEval() {
+  if (!confirm('지금까지의 응대를 평가받을까요? 훈련이 종료됩니다.')) return;
+  showLoading('AI가 평가 중입니다...');
+  try {
+    const res = await fetch('/api/evaluate', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({session_id:state.sessionId, job_type:state.jobType,
+        difficulty:state.difficulty, messages:state.messages, scenario:state.scenario})
+    });
+    const data = await res.json();
+    const circle = document.getElementById('grade-circle');
+    circle.className = 'grade-circle ' + data.grade;
+    document.getElementById('result-grade').textContent = data.grade;
+    document.getElementById('result-score').textContent = data.score;
+    document.getElementById('result-grade-txt').textContent = GRADE_LABELS[data.grade] || '';
+    document.getElementById('result-feedback').textContent = data.feedback;
+    showScreen('screen-result');
+  } catch(e) { alert('평가 실패: ' + e.message); }
+  finally { hideLoading(); }
+}
+
+function retryTraining() { startTraining(); }
+
+async function adminLogin() {
+  const pw = document.getElementById('admin-pw').value;
+  const errEl = document.getElementById('admin-error');
+  errEl.textContent = '';
+  try {
+    const res = await fetch('/api/admin', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({action:'login', password:pw})
+    });
+    if (res.ok) { window.location.href = '/admin'; }
+    else { errEl.textContent = '비밀번호가 틀렸습니다.'; }
+  } catch(e) { errEl.textContent = '로그인 실패'; }
+}
+
+(function init() {
+  if (window.location.pathname.includes('admin')) showScreen('screen-admin-login');
+})();
+</script>
+</body>
+</html>
