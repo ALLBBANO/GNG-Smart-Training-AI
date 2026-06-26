@@ -204,6 +204,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', 'Apple SD
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   margin: 0 auto 16px;
 }
+.grade-circle.S { background: linear-gradient(135deg, #7c3aed, #a855f7); }
 .grade-circle.A { background: linear-gradient(135deg, #16a34a, #22c55e); }
 .grade-circle.B { background: linear-gradient(135deg, var(--orange), #fb923c); }
 .grade-circle.C { background: linear-gradient(135deg, #dc2626, #f87171); }
@@ -446,7 +447,7 @@ const JOB_LABELS = {
   cashier:'캐셔', vegetable:'야채/과일', seafood:'수산', meat:'정육',
   cs:'고객상담실', vip:'VIP 라운지', rental:'유모차/휠체어', general:'일반 응대'
 };
-const GRADE_LABELS = { A:'우수', B:'양호', C:'개선 필요' };
+const GRADE_LABELS = { S:'완벽', A:'우수', B:'양호', C:'개선 필요' };
 
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));

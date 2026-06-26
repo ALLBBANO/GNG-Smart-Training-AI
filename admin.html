@@ -6,149 +6,124 @@
 <title>GST 관리자 대시보드</title>
 <style>
 :root {
-  --navy: #1a1f36;
-  --navy2: #252b47;
-  --navy3: #1e2a45;
-  --orange: #f97316;
-  --orange-dark: #ea6c0a;
-  --orange-light: #fff4ed;
-  --bg: #f5f6fa;
-  --card: #ffffff;
-  --text: #1a1f36;
-  --sub: #6b7280;
-  --border: #e5e7eb;
-  --radius: 12px;
-  --shadow: 0 2px 12px rgba(0,0,0,0.07);
-  --green: #16a34a;
-  --blue: #2563eb;
-  --red: #dc2626;
+  --navy:#1a1f36; --navy2:#252b47; --orange:#f97316; --orange-dark:#ea6c0a;
+  --orange-light:#fff4ed; --bg:#f5f6fa; --card:#ffffff; --text:#1a1f36;
+  --sub:#6b7280; --border:#e5e7eb; --radius:12px; --shadow:0 2px 12px rgba(0,0,0,0.07);
+  --green:#16a34a; --blue:#2563eb; --red:#dc2626; --purple:#7c3aed;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); }
-
-/* ── 레이아웃 ── */
-.layout { display: flex; min-height: 100vh; }
-.sidebar { background: var(--navy); color: #fff; width: 220px; flex-shrink: 0; display: flex; flex-direction: column; }
-.main { flex: 1; overflow-y: auto; }
-
-/* ── 사이드바 ── */
-.sidebar-logo { align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; gap: 10px; padding: 20px 16px; }
-.sidebar-logo .badge { background: var(--orange); border-radius: 6px; color: #fff; font-size: 13px; font-weight: 800; padding: 3px 8px; }
-.sidebar-logo .title { color: rgba(255,255,255,0.8); font-size: 12px; }
-.sidebar-nav { flex: 1; padding: 12px 0; }
-.nav-item { align-items: center; border-radius: 8px; cursor: pointer; display: flex; gap: 10px; font-size: 13px; font-weight: 500; margin: 2px 8px; padding: 10px 12px; color: rgba(255,255,255,0.65); transition: all .15s; }
-.nav-item:hover { background: rgba(255,255,255,0.08); color: #fff; }
-.nav-item.active { background: var(--orange); color: #fff; }
-.nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
-.sidebar-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding: 12px 8px; }
-.logout-btn { align-items: center; background: none; border: none; border-radius: 8px; color: rgba(255,255,255,0.5); cursor: pointer; display: flex; font-size: 13px; gap: 8px; padding: 10px 12px; width: 100%; }
-.logout-btn:hover { color: #fff; background: rgba(255,255,255,0.08); }
-
-/* ── 메인 헤더 ── */
-.main-header { background: var(--card); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; position: sticky; top: 0; z-index: 10; }
-.main-header h2 { font-size: 16px; font-weight: 700; }
-.period-select { border: 1px solid var(--border); border-radius: 8px; font-size: 13px; padding: 6px 10px; }
-
-/* ── 콘텐츠 ── */
-.content { padding: 24px; }
-
-/* ── 통계 카드 ── */
-.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
-.stat-card { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); padding: 18px 20px; }
-.stat-card .label { color: var(--sub); font-size: 12px; font-weight: 600; margin-bottom: 8px; }
-.stat-card .value { font-size: 28px; font-weight: 800; }
-.stat-card .sub-value { color: var(--sub); font-size: 12px; margin-top: 4px; }
-.stat-card.blue .value { color: var(--blue); }
-.stat-card.orange .value { color: var(--orange); }
-.stat-card.green .value { color: var(--green); }
-.stat-card.purple .value { color: #7c3aed; }
-
-/* ── 섹션 ── */
-.section { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 16px; }
-.section-header { align-items: center; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; padding: 16px 20px; }
-.section-header h3 { font-size: 14px; font-weight: 700; }
-.section-body { padding: 20px; }
-
-/* ── 등급 분포 ── */
-.grade-bars { display: flex; flex-direction: column; gap: 10px; }
-.grade-row { display: flex; align-items: center; gap: 12px; }
-.grade-row .grade-label { font-size: 13px; font-weight: 700; min-width: 40px; }
-.grade-row .bar-wrap { flex: 1; background: var(--bg); border-radius: 100px; height: 10px; overflow: hidden; }
-.grade-row .bar { border-radius: 100px; height: 100%; transition: width .4s; }
-.bar-a { background: var(--green); }
-.bar-b { background: var(--blue); }
-.bar-c { background: var(--red); }
-.grade-row .count { color: var(--sub); font-size: 13px; min-width: 24px; text-align: right; }
-
-/* ── 난이도 점수 ── */
-.diff-scores { display: flex; flex-direction: column; gap: 8px; }
-.diff-row { align-items: center; display: flex; gap: 12px; }
-.diff-row .lv { color: var(--orange); font-size: 12px; font-weight: 700; min-width: 36px; }
-.diff-row .bar-wrap { flex: 1; background: var(--bg); border-radius: 100px; height: 8px; overflow: hidden; }
-.diff-row .bar { background: var(--orange); border-radius: 100px; height: 100%; transition: width .4s; }
-.diff-row .score { color: var(--text); font-size: 13px; font-weight: 700; min-width: 40px; text-align: right; }
-
-/* ── 테이블 ── */
-.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.data-table th { background: var(--bg); border-bottom: 1px solid var(--border); color: var(--sub); font-size: 11px; font-weight: 700; letter-spacing: 0.5px; padding: 10px 12px; text-align: left; }
-.data-table td { border-bottom: 1px solid var(--border); padding: 12px; vertical-align: middle; }
-.data-table tr:last-child td { border-bottom: none; }
-.data-table tr:hover td { background: var(--bg); }
-.grade-badge { border-radius: 6px; display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; }
-.grade-badge.A { background: #dcfce7; color: var(--green); }
-.grade-badge.B { background: #dbeafe; color: var(--blue); }
-.grade-badge.C { background: #fee2e2; color: var(--red); }
-.job-badge { background: var(--orange-light); border-radius: 6px; color: var(--orange); font-size: 11px; font-weight: 600; padding: 2px 8px; }
-.lv-badge { border-radius: 6px; color: var(--sub); font-size: 11px; font-weight: 600; }
-
-/* ── 필터 ── */
-.filter-row { align-items: center; display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
-.filter-row select, .filter-row input { border: 1px solid var(--border); border-radius: 8px; font-size: 13px; padding: 7px 10px; }
-.filter-row .btn-search { background: var(--orange); border: none; border-radius: 8px; color: #fff; cursor: pointer; font-size: 13px; font-weight: 600; padding: 7px 14px; }
-
-/* ── 직원 순위 ── */
-.rank-list { display: flex; flex-direction: column; gap: 8px; }
-.rank-item { align-items: center; background: var(--bg); border-radius: 10px; display: flex; gap: 12px; padding: 12px 14px; }
-.rank-num { color: var(--sub); font-size: 13px; font-weight: 800; min-width: 24px; text-align: center; }
-.rank-num.top { color: var(--orange); }
-.rank-name { flex: 1; font-size: 14px; font-weight: 700; }
-.rank-info { color: var(--sub); font-size: 12px; }
-.rank-score { font-size: 16px; font-weight: 800; color: var(--orange); }
-
-/* ── 로그인 화면 ── */
-#login-screen { align-items: center; background: var(--navy); display: none; justify-content: center; min-height: 100vh; }
-#login-screen.show { display: flex; }
-.login-box { background: var(--navy2); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 32px 28px; width: 360px; }
-.login-box .logo-row { align-items: center; display: flex; gap: 10px; justify-content: center; margin-bottom: 24px; }
-.login-box label { color: rgba(255,255,255,0.5); display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
-.login-box input { background: var(--navy); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; color: #fff; font-size: 15px; padding: 12px 14px; width: 100%; }
-.login-box input:focus { border-color: var(--orange); outline: none; }
-.login-btn { background: var(--orange); border: none; border-radius: 10px; color: #fff; cursor: pointer; font-size: 15px; font-weight: 700; margin-top: 16px; padding: 14px; width: 100%; }
-.login-error { color: #f87171; font-size: 13px; margin-top: 8px; min-height: 20px; text-align: center; }
-.back-link { color: rgba(255,255,255,0.4); display: block; font-size: 12px; margin-top: 14px; text-align: center; text-decoration: none; }
-
-/* ── 대시보드 숨김 ── */
-#dashboard { display: none; }
-#dashboard.show { display: flex; }
-
-/* ── 빈 상태 ── */
-.empty-state { color: var(--sub); font-size: 14px; padding: 40px; text-align: center; }
-
-/* ── 반응형 ── */
-@media (max-width: 768px) {
-  .sidebar { display: none; }
-  .stats-grid { grid-template-columns: 1fr 1fr; }
-}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);}
+.layout{display:flex;min-height:100vh;}
+.sidebar{background:var(--navy);color:#fff;width:220px;flex-shrink:0;display:flex;flex-direction:column;}
+.main{flex:1;overflow-y:auto;}
+.sidebar-logo{align-items:center;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;gap:10px;padding:20px 16px;}
+.sidebar-logo .badge{background:var(--orange);border-radius:6px;color:#fff;font-size:13px;font-weight:800;padding:3px 8px;}
+.sidebar-nav{flex:1;padding:12px 0;}
+.nav-item{align-items:center;border-radius:8px;cursor:pointer;display:flex;gap:10px;font-size:13px;font-weight:500;margin:2px 8px;padding:10px 12px;color:rgba(255,255,255,0.65);transition:all .15s;}
+.nav-item:hover{background:rgba(255,255,255,0.08);color:#fff;}
+.nav-item.active{background:var(--orange);color:#fff;}
+.sidebar-bottom{border-top:1px solid rgba(255,255,255,0.08);padding:12px 8px;}
+.logout-btn{align-items:center;background:none;border:none;border-radius:8px;color:rgba(255,255,255,0.5);cursor:pointer;display:flex;font-size:13px;gap:8px;padding:10px 12px;width:100%;}
+.logout-btn:hover{color:#fff;background:rgba(255,255,255,0.08);}
+.main-header{background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:16px 24px;position:sticky;top:0;z-index:10;}
+.main-header h2{font-size:16px;font-weight:700;}
+.period-select{border:1px solid var(--border);border-radius:8px;font-size:13px;padding:6px 10px;}
+.content{padding:24px;}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.stat-card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:18px 20px;}
+.stat-card .label{color:var(--sub);font-size:12px;font-weight:600;margin-bottom:8px;}
+.stat-card .value{font-size:28px;font-weight:800;}
+.stat-card .sub-value{color:var(--sub);font-size:12px;margin-top:4px;}
+.stat-card.blue .value{color:var(--blue);}
+.stat-card.orange .value{color:var(--orange);}
+.stat-card.green .value{color:var(--green);}
+.stat-card.red .value{color:var(--red);}
+.section{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);margin-bottom:16px;}
+.section-header{align-items:center;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;padding:16px 20px;}
+.section-header h3{font-size:14px;font-weight:700;}
+.section-body{padding:20px;}
+/* 등급 분포 */
+.grade-bars{display:flex;flex-direction:column;gap:10px;}
+.grade-row{display:flex;align-items:center;gap:12px;}
+.grade-row .gl{font-size:13px;font-weight:700;min-width:40px;}
+.grade-row .bar-wrap{flex:1;background:var(--bg);border-radius:100px;height:10px;overflow:hidden;}
+.grade-row .bar{border-radius:100px;height:100%;transition:width .4s;}
+.bar-s{background:var(--purple);}
+.bar-a{background:var(--green);}
+.bar-b{background:var(--blue);}
+.bar-c{background:var(--red);}
+.grade-row .cnt{color:var(--sub);font-size:13px;min-width:24px;text-align:right;}
+/* 월별 그래프 */
+.chart-wrap{height:160px;display:flex;align-items:flex-end;gap:8px;padding:8px 0;}
+.chart-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.chart-bar-bg{width:100%;background:var(--bg);border-radius:6px;height:120px;display:flex;align-items:flex-end;overflow:hidden;}
+.chart-bar-fill{width:100%;background:var(--orange);border-radius:6px;transition:height .4s;}
+.chart-label{font-size:11px;color:var(--sub);}
+.chart-score{font-size:11px;font-weight:700;color:var(--orange);}
+/* 테이블 */
+.data-table{width:100%;border-collapse:collapse;font-size:13px;}
+.data-table th{background:var(--bg);border-bottom:1px solid var(--border);color:var(--sub);font-size:11px;font-weight:700;letter-spacing:.5px;padding:10px 12px;text-align:left;}
+.data-table td{border-bottom:1px solid var(--border);padding:12px;vertical-align:middle;}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:hover td{background:var(--bg);cursor:pointer;}
+.grade-badge{border-radius:6px;display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;}
+.grade-badge.S{background:#ede9fe;color:var(--purple);}
+.grade-badge.A{background:#dcfce7;color:var(--green);}
+.grade-badge.B{background:#dbeafe;color:var(--blue);}
+.grade-badge.C{background:#fee2e2;color:var(--red);}
+.job-badge{background:var(--orange-light);border-radius:6px;color:var(--orange);font-size:11px;font-weight:600;padding:2px 8px;}
+/* 피드백 펼치기 */
+.feedback-row{display:none;}
+.feedback-row td{background:#f9fafb;padding:12px 16px;}
+.feedback-content{font-size:13px;color:var(--text);line-height:1.7;border-left:3px solid var(--orange);padding-left:12px;}
+/* 필터 */
+.filter-row{align-items:center;display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+.filter-row select,.filter-row input{border:1px solid var(--border);border-radius:8px;font-size:13px;padding:7px 10px;}
+.btn-search{background:var(--orange);border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:13px;font-weight:600;padding:7px 14px;}
+/* 직원 순위 */
+.rank-list{display:flex;flex-direction:column;gap:8px;}
+.rank-item{align-items:center;background:var(--bg);border-radius:10px;display:flex;gap:12px;padding:12px 16px;}
+.rank-num{color:var(--sub);font-size:14px;font-weight:800;min-width:28px;text-align:center;}
+.rank-num.top1{color:#f59e0b;font-size:18px;}
+.rank-num.top2{color:#94a3b8;font-size:16px;}
+.rank-num.top3{color:#cd7c2f;font-size:15px;}
+.rank-name{flex:1;font-size:14px;font-weight:700;}
+.rank-info{color:var(--sub);font-size:12px;}
+.rank-score{font-size:18px;font-weight:800;color:var(--orange);}
+/* 직무 분석 */
+.job-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+.job-card{background:var(--card);border:2px solid var(--border);border-radius:var(--radius);cursor:pointer;padding:16px;text-align:center;transition:all .18s;}
+.job-card:hover,.job-card.active{border-color:var(--orange);background:var(--orange-light);}
+.job-card .jicon{font-size:24px;margin-bottom:6px;}
+.job-card .jname{font-size:13px;font-weight:700;}
+.job-card .jcount{color:var(--sub);font-size:11px;margin-top:3px;}
+.job-card .javg{color:var(--orange);font-size:13px;font-weight:700;margin-top:4px;}
+.job-detail{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);display:none;}
+.job-detail.show{display:block;}
+/* 로그인 */
+#login-screen{align-items:center;background:var(--navy);display:none;justify-content:center;min-height:100vh;}
+#login-screen.show{display:flex;}
+.login-box{background:var(--navy2);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:32px 28px;width:360px;}
+.login-box label{color:rgba(255,255,255,0.5);display:block;font-size:12px;font-weight:600;margin-bottom:6px;}
+.login-box input{background:var(--navy);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:#fff;font-size:15px;padding:12px 14px;width:100%;}
+.login-box input:focus{border-color:var(--orange);outline:none;}
+.login-btn{background:var(--orange);border:none;border-radius:10px;color:#fff;cursor:pointer;font-size:15px;font-weight:700;margin-top:16px;padding:14px;width:100%;}
+.login-error{color:#f87171;font-size:13px;margin-top:8px;min-height:20px;text-align:center;}
+.back-link{color:rgba(255,255,255,0.4);display:block;font-size:12px;margin-top:14px;text-align:center;text-decoration:none;}
+#dashboard{display:none;}
+#dashboard.show{display:flex;}
+.empty-state{color:var(--sub);font-size:14px;padding:40px;text-align:center;}
+@media(max-width:768px){.sidebar{display:none;}.stats-grid{grid-template-columns:1fr 1fr;}.job-grid{grid-template-columns:repeat(2,1fr);}}
 </style>
 </head>
 <body>
 
-<!-- ══ 로그인 ══ -->
+<!-- 로그인 -->
 <div id="login-screen" class="show">
   <div class="login-box">
-    <div class="logo-row">
-      <span style="background:var(--orange);color:#fff;font-size:14px;font-weight:800;padding:4px 10px;border-radius:6px;">GST</span>
-      <span style="color:rgba(255,255,255,0.7);font-size:14px;">관리자 대시보드</span>
+    <div style="text-align:center;margin-bottom:20px;">
+      <span style="background:var(--orange);color:#fff;font-size:15px;font-weight:800;padding:5px 12px;border-radius:8px;">GST</span>
+      <div style="color:rgba(255,255,255,0.7);font-size:14px;margin-top:10px;">관리자 대시보드</div>
     </div>
     <div style="font-size:32px;text-align:center;margin-bottom:20px;">🔐</div>
     <label>관리자 비밀번호</label>
@@ -159,37 +134,27 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', sans-seri
   </div>
 </div>
 
-<!-- ══ 대시보드 ══ -->
+<!-- 대시보드 -->
 <div id="dashboard" class="layout">
-  <!-- 사이드바 -->
   <div class="sidebar">
     <div class="sidebar-logo">
       <span class="badge">GST</span>
       <div>
         <div style="color:#fff;font-size:13px;font-weight:700;">G&G Smart Training</div>
-        <div class="title">관리자 대시보드</div>
+        <div style="color:rgba(255,255,255,0.5);font-size:11px;">관리자 대시보드</div>
       </div>
     </div>
     <nav class="sidebar-nav">
-      <div class="nav-item active" onclick="showTab('overview')" id="nav-overview">
-        <span class="icon">📊</span> 전체 현황
-      </div>
-      <div class="nav-item" onclick="showTab('sessions')" id="nav-sessions">
-        <span class="icon">📋</span> 훈련 기록
-      </div>
-      <div class="nav-item" onclick="showTab('ranking')" id="nav-ranking">
-        <span class="icon">🏆</span> 직원 순위
-      </div>
-      <div class="nav-item" onclick="showTab('job-stats')" id="nav-job-stats">
-        <span class="icon">📈</span> 직무 분석
-      </div>
+      <div class="nav-item active" onclick="showTab('overview')" id="nav-overview"><span>📊</span> 전체 현황</div>
+      <div class="nav-item" onclick="showTab('sessions')" id="nav-sessions"><span>📋</span> 훈련 기록</div>
+      <div class="nav-item" onclick="showTab('ranking')" id="nav-ranking"><span>🏆</span> 직원 순위</div>
+      <div class="nav-item" onclick="showTab('job-stats')" id="nav-job-stats"><span>📈</span> 직무 분석</div>
     </nav>
     <div class="sidebar-bottom">
       <button class="logout-btn" onclick="doLogout()">🚪 로그아웃</button>
     </div>
   </div>
 
-  <!-- 메인 -->
   <div class="main">
     <!-- 전체 현황 -->
     <div id="tab-overview">
@@ -204,43 +169,23 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', sans-seri
       </div>
       <div class="content">
         <div class="stats-grid">
-          <div class="stat-card blue">
-            <div class="label">총 훈련 횟수</div>
-            <div class="value" id="stat-total">-</div>
-            <div class="sub-value">건</div>
-          </div>
-          <div class="stat-card orange">
-            <div class="label">평균 점수</div>
-            <div class="value" id="stat-avg">-</div>
-            <div class="sub-value">점</div>
-          </div>
-          <div class="stat-card green">
-            <div class="label">A등급 비율</div>
-            <div class="value" id="stat-a-rate">-</div>
-            <div class="sub-value">%</div>
-          </div>
-          <div class="stat-card purple">
-            <div class="label">참여 직원 수</div>
-            <div class="value" id="stat-employees">-</div>
-            <div class="sub-value">명</div>
-          </div>
+          <div class="stat-card blue"><div class="label">총 훈련 횟수</div><div class="value" id="stat-total">-</div><div class="sub-value">건</div></div>
+          <div class="stat-card orange"><div class="label">평균 점수</div><div class="value" id="stat-avg">-</div><div class="sub-value">점</div></div>
+          <div class="stat-card green"><div class="label">최고 점수</div><div class="value" id="stat-best">-</div><div class="sub-value">점</div></div>
+          <div class="stat-card red"><div class="label">추가 교육 필요</div><div class="value" id="stat-c">-</div><div class="sub-value">명 (C등급)</div></div>
         </div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
           <div class="section">
             <div class="section-header"><h3>등급 분포</h3></div>
             <div class="section-body">
-              <div class="grade-bars" id="grade-bars">
-                <div class="empty-state">데이터 로딩 중...</div>
-              </div>
+              <div class="grade-bars" id="grade-bars"><div class="empty-state">로딩 중...</div></div>
             </div>
           </div>
           <div class="section">
-            <div class="section-header"><h3>난이도별 평균 점수</h3></div>
-            <div class="section-body">
-              <div class="diff-scores" id="diff-scores">
-                <div class="empty-state">데이터 로딩 중...</div>
-              </div>
+            <div class="section-header"><h3>월별 평균 점수</h3></div>
+            <div class="section-body" style="padding:12px 20px;">
+              <div class="chart-wrap" id="monthly-chart"><div class="empty-state">로딩 중...</div></div>
             </div>
           </div>
         </div>
@@ -252,11 +197,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', sans-seri
           </div>
           <div class="section-body" style="padding:0;">
             <table class="data-table">
-              <thead>
-                <tr>
-                  <th>직원명</th><th>직무</th><th>난이도</th><th>점수</th><th>등급</th><th>훈련 일시</th>
-                </tr>
-              </thead>
+              <thead><tr><th>직원명</th><th>직무</th><th>난이도</th><th>점수</th><th>등급</th><th>훈련 일시</th></tr></thead>
               <tbody id="recent-table"><tr><td colspan="6" class="empty-state">로딩 중...</td></tr></tbody>
             </table>
           </div>
@@ -272,30 +213,23 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', sans-seri
           <input type="text" id="filter-name" placeholder="직원명 검색">
           <select id="filter-job">
             <option value="">전체 직무</option>
-            <option value="cashier">캐셔</option>
-            <option value="vegetable">야채/과일</option>
-            <option value="seafood">수산</option>
-            <option value="meat">정육</option>
-            <option value="cs">고객상담실</option>
-            <option value="vip">VIP 라운지</option>
-            <option value="rental">유모차/휠체어</option>
-            <option value="general">일반 응대</option>
+            <option value="cashier">캐셔</option><option value="vegetable">야채/과일</option>
+            <option value="seafood">수산</option><option value="meat">정육</option>
+            <option value="cs">고객상담실</option><option value="vip">VIP 라운지</option>
+            <option value="rental">유모차/휠체어</option><option value="general">일반 응대</option>
           </select>
           <select id="filter-grade">
             <option value="">전체 등급</option>
-            <option value="A">A등급</option>
-            <option value="B">B등급</option>
-            <option value="C">C등급</option>
+            <option value="S">S등급</option><option value="A">A등급</option>
+            <option value="B">B등급</option><option value="C">C등급</option>
           </select>
           <button class="btn-search" onclick="loadSessions()">🔍 검색</button>
         </div>
         <div class="section">
           <div class="section-body" style="padding:0;">
-            <table class="data-table">
-              <thead>
-                <tr><th>직원명</th><th>직무</th><th>난이도</th><th>점수</th><th>등급</th><th>훈련 일시</th></tr>
-              </thead>
-              <tbody id="sessions-table"><tr><td colspan="6" class="empty-state">검색 결과가 없습니다.</td></tr></tbody>
+            <table class="data-table" id="sessions-table-wrap">
+              <thead><tr><th>직원명</th><th>직무</th><th>난이도</th><th>점수</th><th>등급</th><th>훈련 일시</th></tr></thead>
+              <tbody id="sessions-table"><tr><td colspan="6" class="empty-state">검색하세요.</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -304,13 +238,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', sans-seri
 
     <!-- 직원 순위 -->
     <div id="tab-ranking" style="display:none">
-      <div class="main-header"><h2>🏆 직원 순위</h2></div>
+      <div class="main-header"><h2>🏆 직원 순위</h2><span style="color:var(--sub);font-size:13px;">최고 점수 기준</span></div>
       <div class="content">
         <div class="section">
           <div class="section-body">
-            <div class="rank-list" id="rank-list">
-              <div class="empty-state">데이터 로딩 중...</div>
-            </div>
+            <div class="rank-list" id="rank-list"><div class="empty-state">로딩 중...</div></div>
           </div>
         </div>
       </div>
@@ -320,13 +252,15 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', sans-seri
     <div id="tab-job-stats" style="display:none">
       <div class="main-header"><h2>📈 직무 분석</h2></div>
       <div class="content">
-        <div class="section">
-          <div class="section-body" style="padding:0;">
+        <div class="job-grid" id="job-grid"></div>
+        <div class="job-detail" id="job-detail">
+          <div class="section-header">
+            <h3 id="job-detail-title">직무 상세</h3>
+          </div>
+          <div style="padding:0;">
             <table class="data-table">
-              <thead>
-                <tr><th>직무</th><th>훈련 횟수</th><th>평균 점수</th><th>A등급</th><th>B등급</th><th>C등급</th></tr>
-              </thead>
-              <tbody id="job-stats-table"><tr><td colspan="6" class="empty-state">데이터 로딩 중...</td></tr></tbody>
+              <thead><tr><th>직원명</th><th>최고 점수</th><th>최고 등급</th><th>훈련 횟수</th></tr></thead>
+              <tbody id="job-detail-table"></tbody>
             </table>
           </div>
         </div>
@@ -340,98 +274,108 @@ const JOB_LABELS = {
   cashier:'캐셔', vegetable:'야채/과일', seafood:'수산', meat:'정육',
   cs:'고객상담실', vip:'VIP 라운지', rental:'유모차/휠체어', general:'일반 응대'
 };
+const JOB_ICONS = {
+  cashier:'🛒', vegetable:'🥬', seafood:'🐟', meat:'🥩',
+  cs:'💬', vip:'⭐', rental:'🦽', general:'👤'
+};
+const GRADE_ORDER = {S:4,A:3,B:2,C:1};
 
-// ── 로그인 ──────────────────────────────────────────────────────────────────
 async function doLogin() {
   const pw = document.getElementById('login-pw').value;
   const errEl = document.getElementById('login-error');
   errEl.textContent = '';
   try {
-    const res = await fetch('/api/admin', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({action:'login', password:pw})
-    });
+    const res = await fetch('/api/admin', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'login',password:pw})});
     if (res.ok) {
       document.getElementById('login-screen').classList.remove('show');
       document.getElementById('dashboard').classList.add('show');
       loadOverview(30);
-    } else {
-      errEl.textContent = '비밀번호가 틀렸습니다.';
-    }
+    } else { errEl.textContent = '비밀번호가 틀렸습니다.'; }
   } catch(e) { errEl.textContent = '로그인 실패'; }
 }
 
 async function doLogout() {
-  await fetch('/api/admin', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action:'logout'})});
+  await fetch('/api/admin', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'logout'})});
   document.getElementById('dashboard').classList.remove('show');
   document.getElementById('login-screen').classList.add('show');
   document.getElementById('login-pw').value = '';
 }
 
-// ── 탭 전환 ─────────────────────────────────────────────────────────────────
 function showTab(tab) {
   ['overview','sessions','ranking','job-stats'].forEach(t => {
-    document.getElementById('tab-' + t).style.display = t === tab ? 'block' : 'none';
-    document.getElementById('nav-' + t).classList.toggle('active', t === tab);
+    document.getElementById('tab-'+t).style.display = t===tab?'block':'none';
+    document.getElementById('nav-'+t).classList.toggle('active', t===tab);
   });
-  if (tab === 'sessions') loadSessions();
-  if (tab === 'ranking') loadRanking();
-  if (tab === 'job-stats') loadJobStats();
+  if(tab==='sessions') loadSessions();
+  if(tab==='ranking') loadRanking();
+  if(tab==='job-stats') loadJobStats();
 }
 
-// ── 전체 현황 ───────────────────────────────────────────────────────────────
+// ── 전체 현황 ──────────────────────────────────────────────────────────────────
 async function loadOverview(days=30) {
   try {
     const res = await fetch(`/api/admin?action=overview&days=${days}`);
     const data = await res.json();
+    const rows = data.recent || [];
+    const allRes = await fetch('/api/admin?action=sessions');
+    const allData = await allRes.json();
+    const all = allData.sessions || [];
 
     document.getElementById('stat-total').textContent = data.total ?? 0;
     document.getElementById('stat-avg').textContent = data.avg_score ?? 0;
-    document.getElementById('stat-a-rate').textContent = data.a_rate ?? 0;
-    document.getElementById('stat-employees').textContent = data.employees ?? 0;
+
+    // 최고 점수
+    const best = all.length ? Math.max(...all.map(r=>r.score||0)) : 0;
+    document.getElementById('stat-best').textContent = best;
+
+    // C등급 인원 (중복 제거)
+    const cNames = [...new Set(all.filter(r=>r.grade==='C').map(r=>r.employee_name))];
+    document.getElementById('stat-c').textContent = cNames.length;
 
     // 등급 분포
-    const total = data.total || 1;
-    const aCount = (data.recent || []).filter(r => r.grade==='A').length;
-    const bCount = (data.recent || []).filter(r => r.grade==='B').length;
-    const cCount = (data.recent || []).filter(r => r.grade==='C').length;
     const byJob = data.by_job || [];
-    const totalA = byJob.reduce((s,j)=>s+j.a_count,0);
-    const totalB = byJob.reduce((s,j)=>s+j.b_count,0);
-    const totalC = byJob.reduce((s,j)=>s+j.c_count,0);
-    const gt = totalA+totalB+totalC || 1;
-
+    const sC = byJob.reduce((s,j)=>s+(j.s_count||0),0);
+    const aC = byJob.reduce((s,j)=>s+(j.a_count||0),0);
+    const bC = byJob.reduce((s,j)=>s+(j.b_count||0),0);
+    const cC = byJob.reduce((s,j)=>s+(j.c_count||0),0);
+    const gt = sC+aC+bC+cC||1;
     document.getElementById('grade-bars').innerHTML = `
-      <div class="grade-row"><span class="grade-label" style="color:var(--green)">A등급</span>
-        <div class="bar-wrap"><div class="bar bar-a" style="width:${totalA/gt*100}%"></div></div>
-        <span class="count">${totalA}</span></div>
-      <div class="grade-row"><span class="grade-label" style="color:var(--blue)">B등급</span>
-        <div class="bar-wrap"><div class="bar bar-b" style="width:${totalB/gt*100}%"></div></div>
-        <span class="count">${totalB}</span></div>
-      <div class="grade-row"><span class="grade-label" style="color:var(--red)">C등급</span>
-        <div class="bar-wrap"><div class="bar bar-c" style="width:${totalC/gt*100}%"></div></div>
-        <span class="count">${totalC}</span></div>
+      <div class="grade-row"><span class="gl" style="color:var(--purple)">S</span><div class="bar-wrap"><div class="bar bar-s" style="width:${sC/gt*100}%"></div></div><span class="cnt">${sC}</span></div>
+      <div class="grade-row"><span class="gl" style="color:var(--green)">A</span><div class="bar-wrap"><div class="bar bar-a" style="width:${aC/gt*100}%"></div></div><span class="cnt">${aC}</span></div>
+      <div class="grade-row"><span class="gl" style="color:var(--blue)">B</span><div class="bar-wrap"><div class="bar bar-b" style="width:${bC/gt*100}%"></div></div><span class="cnt">${bC}</span></div>
+      <div class="grade-row"><span class="gl" style="color:var(--red)">C</span><div class="bar-wrap"><div class="bar bar-c" style="width:${cC/gt*100}%"></div></div><span class="cnt">${cC}</span></div>
     `;
 
-    // 난이도별 점수
-    const diffData = data.by_difficulty || {};
-    const diffHtml = [1,2,3,4,5].map(lv => {
-      const score = diffData[String(lv)] || 0;
-      return `<div class="diff-row">
-        <span class="lv">Lv.${lv}</span>
-        <div class="bar-wrap"><div class="bar" style="width:${score}%"></div></div>
-        <span class="score">${score}점</span>
-      </div>`;
-    }).join('');
-    document.getElementById('diff-scores').innerHTML = diffHtml || '<div class="empty-state">데이터 없음</div>';
+    // 월별 그래프
+    const monthly = {};
+    all.forEach(r => {
+      if (!r.created_at) return;
+      const d = new Date(r.created_at);
+      const key = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}`;
+      if (!monthly[key]) monthly[key] = [];
+      monthly[key].push(r.score||0);
+    });
+    const months = Object.keys(monthly).sort().slice(-6);
+    const maxScore = 100;
+    if (months.length) {
+      document.getElementById('monthly-chart').innerHTML = months.map(m => {
+        const avg = Math.round(monthly[m].reduce((a,b)=>a+b,0)/monthly[m].length);
+        const h = Math.round(avg/maxScore*100);
+        return `<div class="chart-bar-wrap">
+          <div class="chart-score">${avg}</div>
+          <div class="chart-bar-bg"><div class="chart-bar-fill" style="height:${h}%"></div></div>
+          <div class="chart-label">${m.slice(5)}월</div>
+        </div>`;
+      }).join('');
+    } else {
+      document.getElementById('monthly-chart').innerHTML = '<div class="empty-state">데이터 없음</div>';
+    }
 
-    // 최근 기록
-    renderSessionTable('recent-table', data.recent || []);
+    renderSessionRows('recent-table', rows.slice(0,10), false);
   } catch(e) { console.error(e); }
 }
 
-// ── 훈련 기록 ───────────────────────────────────────────────────────────────
+// ── 훈련 기록 ──────────────────────────────────────────────────────────────────
 async function loadSessions() {
   const name = document.getElementById('filter-name').value;
   const job = document.getElementById('filter-job').value;
@@ -439,85 +383,135 @@ async function loadSessions() {
   try {
     const res = await fetch(`/api/admin?action=sessions&name=${encodeURIComponent(name)}&job=${job}&grade=${grade}`);
     const data = await res.json();
-    renderSessionTable('sessions-table', data.sessions || []);
+    renderSessionRows('sessions-table', data.sessions||[], true);
   } catch(e) { console.error(e); }
 }
 
-function renderSessionTable(tableId, rows) {
-  const tbody = document.getElementById(tableId);
-  if (!rows.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">데이터가 없습니다.</td></tr>';
-    return;
-  }
-  tbody.innerHTML = rows.map(r => `
-    <tr>
+function renderSessionRows(tbodyId, rows, withFeedback) {
+  const tbody = document.getElementById(tbodyId);
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty-state">데이터가 없습니다.</td></tr>'; return; }
+  tbody.innerHTML = rows.map((r,i) => {
+    const rowId = `row-${tbodyId}-${i}`;
+    const feedbackHtml = withFeedback && r.feedback ? `
+      <tr class="feedback-row" id="${rowId}">
+        <td colspan="6"><div class="feedback-content">💬 ${r.feedback}</div></td>
+      </tr>` : '';
+    const clickAttr = withFeedback && r.feedback ? `onclick="toggleFeedback('${rowId}')"` : '';
+    return `<tr ${clickAttr}>
       <td><strong>${r.employee_name}</strong></td>
       <td><span class="job-badge">${JOB_LABELS[r.job_type]||r.job_type}</span></td>
-      <td><span class="lv-badge">Lv.${r.difficulty}</span></td>
+      <td style="color:var(--sub);font-size:12px;">Lv.${r.difficulty}</td>
       <td><strong>${r.score??'-'}점</strong></td>
       <td><span class="grade-badge ${r.grade||''}">${r.grade||'-'}</span></td>
       <td style="color:var(--sub);font-size:12px;">${formatDate(r.created_at)}</td>
-    </tr>
-  `).join('');
+    </tr>${feedbackHtml}`;
+  }).join('');
 }
 
-// ── 직원 순위 ───────────────────────────────────────────────────────────────
+function toggleFeedback(rowId) {
+  const el = document.getElementById(rowId);
+  if (!el) return;
+  el.style.display = el.style.display === 'table-row' ? 'none' : 'table-row';
+}
+
+// ── 직원 순위 ──────────────────────────────────────────────────────────────────
 async function loadRanking() {
   try {
     const res = await fetch('/api/admin?action=sessions');
     const data = await res.json();
     const sessions = data.sessions || [];
-
-    // 직원별 집계
     const emp = {};
     sessions.forEach(s => {
-      if (!emp[s.employee_name]) emp[s.employee_name] = {total:0, scores:[], a:0};
+      if (!emp[s.employee_name]) emp[s.employee_name] = {total:0,best:0,bestGrade:'C'};
       emp[s.employee_name].total++;
-      emp[s.employee_name].scores.push(s.score||0);
-      if (s.grade==='A') emp[s.employee_name].a++;
+      if ((s.score||0) > emp[s.employee_name].best) {
+        emp[s.employee_name].best = s.score||0;
+        emp[s.employee_name].bestGrade = s.grade||'C';
+      }
     });
-
     const ranked = Object.entries(emp)
-      .map(([name,v]) => ({
-        name,
-        total: v.total,
-        avg: Math.round(v.scores.reduce((a,b)=>a+b,0)/v.scores.length),
-        a: v.a,
-      }))
-      .sort((a,b) => b.avg - a.avg);
+      .map(([name,v])=>({name,...v}))
+      .sort((a,b)=>b.best-a.best);
 
+    const gradeColors = {S:'var(--purple)',A:'var(--green)',B:'var(--blue)',C:'var(--red)'};
     const el = document.getElementById('rank-list');
     if (!ranked.length) { el.innerHTML = '<div class="empty-state">데이터가 없습니다.</div>'; return; }
-    el.innerHTML = ranked.map((r,i) => `
-      <div class="rank-item">
-        <div class="rank-num ${i<3?'top':''}">${i+1}</div>
+    el.innerHTML = ranked.map((r,i) => {
+      const numClass = i===0?'top1':i===1?'top2':i===2?'top3':'';
+      const numIcon = i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1;
+      return `<div class="rank-item">
+        <div class="rank-num ${numClass}">${numIcon}</div>
         <div class="rank-name">${r.name}</div>
-        <div class="rank-info">총 ${r.total}회 · A등급 ${r.a}회</div>
-        <div class="rank-score">${r.avg}점</div>
-      </div>
-    `).join('');
+        <div class="rank-info">총 ${r.total}회 · 최고등급 <span style="color:${gradeColors[r.bestGrade]};font-weight:700;">${r.bestGrade}등급</span></div>
+        <div class="rank-score">${r.best}점</div>
+      </div>`;
+    }).join('');
   } catch(e) { console.error(e); }
 }
 
-// ── 직무 분석 ───────────────────────────────────────────────────────────────
+// ── 직무 분석 ──────────────────────────────────────────────────────────────────
+let jobSessionsCache = [];
+
 async function loadJobStats() {
   try {
-    const res = await fetch('/api/admin?action=overview&days=365');
+    const res = await fetch('/api/admin?action=sessions');
     const data = await res.json();
-    const rows = data.by_job || [];
-    const tbody = document.getElementById('job-stats-table');
-    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty-state">데이터 없음</td></tr>'; return; }
-    tbody.innerHTML = rows.map(r => `
-      <tr>
-        <td><span class="job-badge">${JOB_LABELS[r.job_type]||r.job_type}</span></td>
-        <td>${r.total}회</td>
-        <td><strong>${r.avg_score}점</strong></td>
-        <td style="color:var(--green);font-weight:700;">${r.a_count}</td>
-        <td style="color:var(--blue);font-weight:700;">${r.b_count}</td>
-        <td style="color:var(--red);font-weight:700;">${r.c_count}</td>
-      </tr>
-    `).join('');
+    jobSessionsCache = data.sessions || [];
+
+    const jobMap = {};
+    jobSessionsCache.forEach(s => {
+      if (!jobMap[s.job_type]) jobMap[s.job_type] = [];
+      jobMap[s.job_type].push(s);
+    });
+
+    const jobs = ['cashier','vegetable','seafood','meat','cs','vip','rental','general'];
+    document.getElementById('job-grid').innerHTML = jobs.map(j => {
+      const sessions = jobMap[j] || [];
+      const avg = sessions.length ? Math.round(sessions.reduce((a,b)=>a+(b.score||0),0)/sessions.length) : 0;
+      return `<div class="job-card" onclick="showJobDetail('${j}')" id="jcard-${j}">
+        <div class="jicon">${JOB_ICONS[j]}</div>
+        <div class="jname">${JOB_LABELS[j]}</div>
+        <div class="jcount">${sessions.length}회 훈련</div>
+        <div class="javg">${sessions.length?avg+'점':'-'}</div>
+      </div>`;
+    }).join('');
+    document.getElementById('job-detail').classList.remove('show');
   } catch(e) { console.error(e); }
+}
+
+function showJobDetail(jobType) {
+  document.querySelectorAll('.job-card').forEach(c=>c.classList.remove('active'));
+  document.getElementById('jcard-'+jobType).classList.add('active');
+
+  const sessions = jobSessionsCache.filter(s=>s.job_type===jobType);
+  document.getElementById('job-detail-title').textContent = `${JOB_ICONS[jobType]} ${JOB_LABELS[jobType]} - 훈련 인원`;
+
+  // 직원별 집계
+  const emp = {};
+  sessions.forEach(s => {
+    if (!emp[s.employee_name]) emp[s.employee_name] = {total:0,best:0,bestGrade:'C'};
+    emp[s.employee_name].total++;
+    if ((s.score||0) > emp[s.employee_name].best) {
+      emp[s.employee_name].best = s.score||0;
+      emp[s.employee_name].bestGrade = s.grade||'C';
+    }
+  });
+
+  const ranked = Object.entries(emp)
+    .map(([name,v])=>({name,...v}))
+    .sort((a,b)=>(GRADE_ORDER[b.bestGrade]||0)-(GRADE_ORDER[a.bestGrade]||0)||b.best-a.best);
+
+  const tbody = document.getElementById('job-detail-table');
+  if (!ranked.length) { tbody.innerHTML = '<tr><td colspan="4" class="empty-state">훈련 기록 없음</td></tr>'; }
+  else {
+    tbody.innerHTML = ranked.map(r=>`<tr>
+      <td><strong>${r.name}</strong></td>
+      <td><strong>${r.best}점</strong></td>
+      <td><span class="grade-badge ${r.bestGrade}">${r.bestGrade}</span></td>
+      <td style="color:var(--sub);">${r.total}회</td>
+    </tr>`).join('');
+  }
+  document.getElementById('job-detail').classList.add('show');
 }
 
 function formatDate(dt) {
