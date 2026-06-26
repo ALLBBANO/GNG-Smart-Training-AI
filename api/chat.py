@@ -226,8 +226,30 @@ class handler(BaseHTTPRequestHandler):
         client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
         system_prompt = build_system_prompt(job_type, difficulty, scenario)
 
+        # 첫 메시지 포함 모두 Claude API로 생성
         if is_first:
-            opening = get_opening_line(scenario, job_type, difficulty)
+            first_prompt = f"""지금 당신이 처음으로 직원에게 말을 거는 상황입니다.
+고객 유형: {scenario['customer_type']}
+고객 특성: {scenario['customer_desc']}
+상황: {scenario['situation']}
+감정 상태: {scenario['emotion']}
+난이도: Level {difficulty}
+
+위 설정에 맞게 처음 말을 거는 첫 마디를 자연스럽게 해주세요.
+- 시나리오 내용을 그대로 읽지 말고 실제 고객처럼 자연스럽게
+- 고객 유형의 말투 특성 반드시 반영
+- 1~3문장으로 짧고 임팩트 있게
+- 상황 설명이 아닌 실제 대화로"""
+            try:
+                response = client.messages.create(
+                    model="claude-sonnet-4-6",
+                    max_tokens=150,
+                    system=system_prompt,
+                    messages=[{"role": "user", "content": first_prompt}],
+                )
+                opening = response.content[0].text
+            except Exception as e:
+                opening = get_opening_line(scenario, job_type, difficulty)
             self._respond(200, {"message": opening, "scenario": scenario, "is_first": True})
             return
 
