@@ -178,8 +178,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', 'Apple SD
 }
 .send-btn:disabled { background: var(--border); cursor: not-allowed; }
 .send-btn:hover:not(:disabled) { background: var(--orange-dark); }
-.eval-wrap { margin-top: 8px; }
-.eval-wrap .btn { font-size: 14px; padding: 12px; }
+.eval-wrap { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; }
+.eval-guide-banner { background: var(--orange-light); border: 1px solid rgba(249,115,22,0.25); border-radius: 10px; color: #92400e; font-size: 12px; line-height: 1.5; padding: 8px 12px; text-align: center; }
+.eval-btns-row { display: flex; gap: 8px; }
+.eval-btns-row .btn { font-size: 14px; padding: 12px; flex: 1; }
+.btn-continue { background: var(--navy); color: #fff; border: none; border-radius: var(--radius); cursor: pointer; font-size: 14px; font-weight: 700; padding: 12px; flex: 1; transition: background .18s; }
+.btn-continue:hover { background: var(--navy2); }
 
 /* 타이핑 */
 .typing-indicator { display: flex; align-items: center; gap: 4px; padding: 6px 4px; }
@@ -376,7 +380,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', 'Apple SD
       <button class="send-btn" id="send-btn" onclick="sendMessage()">➤</button>
     </div>
     <div class="eval-wrap" id="eval-wrap" style="display:none">
-      <button class="btn btn-primary" onclick="requestEval()">📊 평가 받기 (훈련 종료)</button>
+      <div id="eval-guide" class="eval-guide-banner" style="display:none">
+        💡 응대가 어느 정도 마무리됐어요. 평가를 받거나 더 연습하고 싶으면 계속하기를 눌러주세요.
+      </div>
+      <div class="eval-btns-row">
+        <button class="btn btn-primary" onclick="requestEval()">📊 평가 받기</button>
+        <button class="btn-continue" id="continue-btn" onclick="continueChat()" style="display:none">▶ 계속하기</button>
+      </div>
     </div>
   </div>
 </div>
@@ -568,7 +578,13 @@ async function sendMessage() {
   state.messages.push({role:'user', content:text});
   state.turnCount++;
   document.getElementById('turn-badge').textContent = state.turnCount + '회';
-  if (state.turnCount >= 3) document.getElementById('eval-wrap').style.display = 'block';
+  if (state.turnCount >= 3) {
+    document.getElementById('eval-wrap').style.display = 'flex';
+  }
+  if (state.turnCount >= 5) {
+    document.getElementById('eval-guide').style.display = 'block';
+    document.getElementById('continue-btn').style.display = 'block';
+  }
 
   showTyping();
   try {
@@ -613,6 +629,13 @@ async function requestEval() {
 }
 
 function retryTraining() { startTraining(); }
+
+function continueChat() {
+  // 계속하기: 안내 배너 숨기고 계속 대화
+  document.getElementById('eval-guide').style.display = 'none';
+  document.getElementById('continue-btn').style.display = 'none';
+  document.getElementById('chat-input').focus();
+}
 
 async function adminLogin() {
   const pw = document.getElementById('admin-pw').value;
