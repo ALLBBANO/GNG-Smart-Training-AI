@@ -123,7 +123,7 @@ class handler(BaseHTTPRequestHandler):
             name  = params.get("name", [""])[0]
 
             q = sb.table("gst_sessions")\
-                .select("id, employee_name, job_type, difficulty, score, grade, created_at")\
+                .select("id, employee_name, job_type, difficulty, score, grade, feedback, created_at")\
                 .not_.is_("completed_at", "null")\
                 .order("created_at", desc=True)\
                 .limit(100)
