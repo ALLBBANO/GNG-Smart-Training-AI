@@ -4,6 +4,8 @@
     { "source": "/api/session", "destination": "/api/session.py" },
     { "source": "/api/chat", "destination": "/api/chat.py" },
     { "source": "/api/evaluate", "destination": "/api/evaluate.py" },
-    { "source": "/api/admin", "destination": "/api/admin.py" }
+    { "source": "/api/admin", "destination": "/api/admin.py" },
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/admin/login", "destination": "/admin.html" }
   ]
 }
