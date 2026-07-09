@@ -265,8 +265,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', 'Apple SD
   </div>
   <div class="home-body">
     <div class="card home-input-card">
+      <label>사업장명을 입력하세요</label>
+      <input type="text" id="input-workplace" placeholder="예: 현대백화점 판교점" maxlength="30" style="margin-bottom:14px;">
       <label>이름을 입력하세요</label>
-      <input type="text" id="input-name" placeholder="홍길동" maxlength="20">
+      <input type="text" id="input-name" placeholder="이름 입력" maxlength="20">
     </div>
     <div class="card home-features-card">
       <div class="feature-row"><div class="feature-dot"></div>8가지 직무별 맞춤 훈련 시나리오</div>
@@ -440,7 +442,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', 'Apple SD
 
 <script>
 let state = {
-  name:'', jobType:'', difficulty:0,
+  name:'', workplace:'', jobType:'', difficulty:0,
   sessionId:'', messages:[], scenario:null, turnCount:0
 };
 const JOB_LABELS = {
@@ -461,17 +463,23 @@ function showLoading(text='처리 중...') {
 function hideLoading() { document.getElementById('loading').classList.remove('show'); }
 
 function goHome() {
-  state = {name:'',jobType:'',difficulty:0,sessionId:'',messages:[],scenario:null,turnCount:0};
+  state = {name:'',workplace:'',jobType:'',difficulty:0,sessionId:'',messages:[],scenario:null,turnCount:0};
   document.getElementById('input-name').value = '';
+  document.getElementById('input-workplace').value = '';
   showScreen('screen-home');
 }
 
 function goJob() {
+  const workplace = document.getElementById('input-workplace').value.trim();
   const name = document.getElementById('input-name').value.trim();
+  if (!workplace) { alert('사업장명을 입력해주세요.'); return; }
   if (!name) { alert('이름을 입력해주세요.'); return; }
+  if (name === '홍길동') { alert('실제 본인 이름을 입력해주세요.'); return; }
+  state.workplace = workplace;
   state.name = name;
-  document.getElementById('header-name-job').textContent = name + ' 님';
-  document.getElementById('header-name-diff').textContent = name + ' 님';
+  const display = workplace + ' · ' + name + ' 님';
+  document.getElementById('header-name-job').textContent = display;
+  document.getElementById('header-name-diff').textContent = display;
   showScreen('screen-job');
 }
 
@@ -498,7 +506,7 @@ async function startTraining() {
   try {
     const sessRes = await fetch('/api/session', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({employee_name:state.name, job_type:state.jobType, difficulty:state.difficulty})
+      body: JSON.stringify({employee_name:state.name, workplace:state.workplace, job_type:state.jobType, difficulty:state.difficulty})
     });
     const sessData = await sessRes.json();
     state.sessionId = sessData.session_id;

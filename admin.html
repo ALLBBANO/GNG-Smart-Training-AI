@@ -197,8 +197,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans KR',sans-serif;back
           </div>
           <div class="section-body" style="padding:0;">
             <table class="data-table">
-              <thead><tr><th>직원명</th><th>직무</th><th>난이도</th><th>점수</th><th>등급</th><th>훈련 일시</th></tr></thead>
-              <tbody id="recent-table"><tr><td colspan="6" class="empty-state">로딩 중...</td></tr></tbody>
+              <thead><tr><th>사업장</th><th>직원명</th><th>직무</th><th>난이도</th><th>점수</th><th>등급</th><th>훈련 일시</th></tr></thead>
+              <tbody id="recent-table"><tr><td colspan="7" class="empty-state">로딩 중...</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -210,6 +210,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans KR',sans-serif;back
       <div class="main-header"><h2>📋 훈련 기록</h2></div>
       <div class="content">
         <div class="filter-row">
+          <input type="text" id="filter-workplace" placeholder="사업장 검색">
           <input type="text" id="filter-name" placeholder="직원명 검색">
           <select id="filter-job">
             <option value="">전체 직무</option>
@@ -228,8 +229,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans KR',sans-serif;back
         <div class="section">
           <div class="section-body" style="padding:0;">
             <table class="data-table" id="sessions-table-wrap">
-              <thead><tr><th>직원명</th><th>직무</th><th>난이도</th><th>점수</th><th>등급</th><th>훈련 일시</th></tr></thead>
-              <tbody id="sessions-table"><tr><td colspan="6" class="empty-state">검색하세요.</td></tr></tbody>
+              <thead><tr><th>사업장</th><th>직원명</th><th>직무</th><th>난이도</th><th>점수</th><th>등급</th><th>훈련 일시</th></tr></thead>
+              <tbody id="sessions-table"><tr><td colspan="7" class="empty-state">검색하세요.</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -378,10 +379,11 @@ async function loadOverview(days=30) {
 // ── 훈련 기록 ──────────────────────────────────────────────────────────────────
 async function loadSessions() {
   const name = document.getElementById('filter-name').value;
+  const workplace = document.getElementById('filter-workplace').value;
   const job = document.getElementById('filter-job').value;
   const grade = document.getElementById('filter-grade').value;
   try {
-    const res = await fetch(`/api/admin?action=sessions&name=${encodeURIComponent(name)}&job=${job}&grade=${grade}`);
+    const res = await fetch(`/api/admin?action=sessions&name=${encodeURIComponent(name)}&workplace=${encodeURIComponent(workplace)}&job=${job}&grade=${grade}`);
     const data = await res.json();
     renderSessionRows('sessions-table', data.sessions||[], true);
   } catch(e) { console.error(e); }
@@ -389,15 +391,16 @@ async function loadSessions() {
 
 function renderSessionRows(tbodyId, rows, withFeedback) {
   const tbody = document.getElementById(tbodyId);
-  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty-state">데이터가 없습니다.</td></tr>'; return; }
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty-state">데이터가 없습니다.</td></tr>'; return; }
   tbody.innerHTML = rows.map((r,i) => {
     const rowId = `row-${tbodyId}-${i}`;
     const feedbackHtml = withFeedback && r.feedback ? `
       <tr class="feedback-row" id="${rowId}">
-        <td colspan="6"><div class="feedback-content">💬 ${r.feedback}</div></td>
+        <td colspan="7"><div class="feedback-content">💬 ${r.feedback}</div></td>
       </tr>` : '';
     const clickAttr = withFeedback && r.feedback ? `onclick="toggleFeedback('${rowId}')"` : '';
     return `<tr ${clickAttr}>
+      <td style="color:var(--sub);font-size:12px;">${r.workplace||'-'}</td>
       <td><strong>${r.employee_name}</strong></td>
       <td><span class="job-badge">${JOB_LABELS[r.job_type]||r.job_type}</span></td>
       <td style="color:var(--sub);font-size:12px;">Lv.${r.difficulty}</td>
@@ -422,8 +425,9 @@ async function loadRanking() {
     const sessions = data.sessions || [];
     const emp = {};
     sessions.forEach(s => {
-      if (!emp[s.employee_name]) emp[s.employee_name] = {total:0,best:0,bestGrade:'C'};
+      if (!emp[s.employee_name]) emp[s.employee_name] = {total:0,best:0,bestGrade:'C',workplace:s.workplace||''};
       emp[s.employee_name].total++;
+      if (s.workplace) emp[s.employee_name].workplace = s.workplace;
       if ((s.score||0) > emp[s.employee_name].best) {
         emp[s.employee_name].best = s.score||0;
         emp[s.employee_name].bestGrade = s.grade||'C';
@@ -441,7 +445,7 @@ async function loadRanking() {
       const numIcon = i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1;
       return `<div class="rank-item">
         <div class="rank-num ${numClass}">${numIcon}</div>
-        <div class="rank-name">${r.name}</div>
+        <div class="rank-name">${r.name}<div style="font-size:11px;color:var(--sub);font-weight:400;">${r.workplace||'-'}</div></div>
         <div class="rank-info">총 ${r.total}회 · 최고등급 <span style="color:${gradeColors[r.bestGrade]};font-weight:700;">${r.bestGrade}등급</span></div>
         <div class="rank-score">${r.best}점</div>
       </div>`;
