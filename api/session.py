@@ -13,6 +13,7 @@ class handler(BaseHTTPRequestHandler):
         body = json.loads(self.rfile.read(length))
         
         employee_name = body.get("employee_name", "").strip()
+        workplace     = body.get("workplace", "").strip()
         job_type      = body.get("job_type", "")
         difficulty    = int(body.get("difficulty", 1))
         
@@ -27,6 +28,7 @@ class handler(BaseHTTPRequestHandler):
             sb.table("gst_sessions").insert({
                 "id": session_id,
                 "employee_name": employee_name,
+                "workplace": workplace,
                 "job_type": job_type,
                 "difficulty": difficulty,
                 "messages": [],

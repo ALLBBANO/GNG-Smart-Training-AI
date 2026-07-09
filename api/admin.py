@@ -71,7 +71,7 @@ class handler(BaseHTTPRequestHandler):
         try:
             days = params.get("days", ["30"])[0]
             result = sb.table("gst_sessions")\
-                .select("id, employee_name, job_type, difficulty, score, grade, created_at")\
+                .select("id, employee_name, workplace, job_type, difficulty, score, grade, created_at")\
                 .not_.is_("completed_at", "null")\
                 .order("created_at", desc=True)\
                 .limit(500)\
@@ -118,19 +118,21 @@ class handler(BaseHTTPRequestHandler):
 
     def _get_sessions(self, sb, params):
         try:
-            job   = params.get("job", [""])[0]
-            grade = params.get("grade", [""])[0]
-            name  = params.get("name", [""])[0]
+            job       = params.get("job", [""])[0]
+            grade     = params.get("grade", [""])[0]
+            name      = params.get("name", [""])[0]
+            workplace = params.get("workplace", [""])[0]
 
             q = sb.table("gst_sessions")\
-                .select("id, employee_name, job_type, difficulty, score, grade, feedback, created_at")\
+                .select("id, employee_name, workplace, job_type, difficulty, score, grade, feedback, created_at")\
                 .not_.is_("completed_at", "null")\
                 .order("created_at", desc=True)\
                 .limit(100)
 
-            if job:   q = q.eq("job_type", job)
-            if grade: q = q.eq("grade", grade)
-            if name:  q = q.ilike("employee_name", f"%{name}%")
+            if job:       q = q.eq("job_type", job)
+            if grade:     q = q.eq("grade", grade)
+            if name:      q = q.ilike("employee_name", f"%{name}%")
+            if workplace: q = q.ilike("workplace", f"%{workplace}%")
 
             result = q.execute()
             self._respond(200, {"sessions": result.data or []})
